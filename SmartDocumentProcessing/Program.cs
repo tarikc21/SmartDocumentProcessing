@@ -1,11 +1,14 @@
 using SmartDocumentProcessing.Components;
+using Microsoft.EntityFrameworkCore;
+using SmartDocumentProcessing.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=app.db"));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
