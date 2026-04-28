@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37012.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartDocumentProcessing", "SmartDocumentProcessing\SmartDocumentProcessing.csproj", "{2CBADD14-20AE-4DEF-8722-5262B31CC8E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CBADD14-20AE-4DEF-8722-5262B31CC8E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CBADD14-20AE-4DEF-8722-5262B31CC8E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CBADD14-20AE-4DEF-8722-5262B31CC8E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CBADD14-20AE-4DEF-8722-5262B31CC8E3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {25982CFB-A79D-4257-BAEB-F1E117F5ACD0}
+	EndGlobalSection
+EndGlobal
