@@ -1,6 +1,7 @@
 using SmartDocumentProcessing.Components;
 using Microsoft.EntityFrameworkCore;
 using SmartDocumentProcessing.Data;
+using SmartDocumentProcessing.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=app.db"));
+builder.Services.AddScoped<DocumentExtractionService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

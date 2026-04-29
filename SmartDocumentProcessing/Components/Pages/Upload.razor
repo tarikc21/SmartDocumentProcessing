@@ -1,13 +1,23 @@
 ﻿@page "/upload"
+@rendermode InteractiveServer
+@using SmartDocumentProcessing.Data
+@using SmartDocumentProcessing.Models
+@using SmartDocumentProcessing.Services
+@inject AppDbContext DbContext
+@inject DocumentExtractionService ExtractionService
 
 <h3>Upload Document</h3>
 
-<InputFile OnChange="HandleFileUpload" />
+<div class="card p-4">
+    <InputFile OnChange="HandleFileUpload" />
 
-@if (!string.IsNullOrEmpty(message))
-{
-    <p>@message</p>
-}
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-success mt-3">
+            @message
+        </div>
+    }
+</div>
 
 @code {
     private string message = "";
@@ -19,13 +29,38 @@
         if (file == null)
             return;
 
-        var filePath = Path.Combine("wwwroot/uploads", file.Name);
-
+        // 1. Spremi fajl na disk
         Directory.CreateDirectory("wwwroot/uploads");
 
-        using var stream = File.Create(filePath);
-        await file.OpenReadStream().CopyToAsync(stream);
+        var uniqueFileName = $"{Guid.NewGuid()}_{file.Name}";
+        var filePath = Path.Combine("wwwroot/uploads", uniqueFileName);
 
-        message = "File uploaded successfully!";
+        using (var stream = File.Create(filePath))
+        {
+            await file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(stream);
+        }
+
+        // 2. Pročitaj sadržaj ako je TXT
+        string textContent = "";
+
+        if (Path.GetExtension(file.Name).ToLower() == ".txt")
+        {
+            using var reader = new StreamReader(file.OpenReadStream());
+            textContent = await reader.ReadToEndAsync();
+        }
+
+        // 3. Ekstrakcija podataka
+        var document = ExtractionService.ExtractFromText(textContent);
+
+        // 4. Dodatni podaci
+        document.OriginalFileName = file.Name;
+        document.Status = "Needs Review";
+        document.CreatedAt = DateTime.Now;
+
+        // 5. Spremanje u bazu
+        DbContext.Documents.Add(document);
+        await DbContext.SaveChangesAsync();
+
+        message = $"File '{file.Name}' processed and saved!";
     }
 }
