@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37012.4 d17.14
+VisualStudioVersion = 17.14.37012.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartDocumentProcessing", "SmartDocumentProcessing\SmartDocumentProcessing.csproj", "{2CBADD14-20AE-4DEF-8722-5262B31CC8E3}"
 EndProject

@@ -1,0 +1,72 @@
+﻿@page "/dashboard"
+@rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore
+@using SmartDocumentProcessing.Data
+@using SmartDocumentProcessing.Models
+@inject AppDbContext DbContext
+
+<h3>Documents Dashboard</h3>
+
+@if (documents == null)
+{
+    <p>Loading...</p>
+}
+else if (!documents.Any())
+{
+    <div class="alert alert-info">No documents processed yet.</div>
+}
+else
+{
+    <table class="table table-striped table-hover mt-3">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Supplier</th>
+                <th>Number</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Uploaded</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var doc in documents)
+            {
+                <tr>
+                    <td>@doc.DocumentType</td>
+                    <td>@doc.SupplierName</td>
+                    <td>@doc.DocumentNumber</td>
+                    <td>@doc.Total @doc.Currency</td>
+                    <td>
+                        <span class="@GetStatusClass(doc.Status)">
+                            @doc.Status
+                        </span>
+                    </td>
+                    <td>@doc.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Document>? documents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        documents = await DbContext.Documents
+            .OrderByDescending(d => d.CreatedAt)
+            .ToListAsync();
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Uploaded" => "badge bg-secondary",
+            "Needs Review" => "badge bg-warning text-dark",
+            "Validated" => "badge bg-success",
+            "Rejected" => "badge bg-danger",
+            _ => "badge bg-light text-dark"
+        };
+    }
+}
