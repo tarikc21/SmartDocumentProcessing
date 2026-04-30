@@ -25,12 +25,15 @@ else
                 <th>Number</th>
                 <th>Total</th>
                 <th>Status</th>
+                <th>Issues</th>
                 <th>Uploaded</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var doc in documents)
             {
+                var docIssues = issues.Where(i => i.DocumentId == doc.Id).ToList();
+
                 <tr>
                     <td>@doc.DocumentType</td>
                     <td>@doc.SupplierName</td>
@@ -41,6 +44,25 @@ else
                             @doc.Status
                         </span>
                     </td>
+                    <td>
+                        @if (docIssues.Any())
+                        {
+                            <span class="badge bg-danger">@docIssues.Count issue(s)</span>
+
+                            <ul class="mt-2 mb-0">
+                                @foreach (var issue in docIssues)
+                                {
+                                    <li>
+                                        <strong>@issue.Field:</strong> @issue.Message
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">No issues</span>
+                        }
+                    </td>
                     <td>@doc.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                 </tr>
             }
@@ -50,11 +72,15 @@ else
 
 @code {
     private List<Document>? documents;
+    private List<ValidationIssue> issues = new();
 
     protected override async Task OnInitializedAsync()
     {
         documents = await DbContext.Documents
             .OrderByDescending(d => d.CreatedAt)
+            .ToListAsync();
+
+        issues = await DbContext.ValidationIssues
             .ToListAsync();
     }
 

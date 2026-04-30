@@ -5,6 +5,7 @@
 @using SmartDocumentProcessing.Services
 @inject AppDbContext DbContext
 @inject DocumentExtractionService ExtractionService
+@inject ValidationService ValidationService
 
 <h3>Upload Document</h3>
 
@@ -60,7 +61,20 @@
         // 5. Spremanje u bazu
         DbContext.Documents.Add(document);
         await DbContext.SaveChangesAsync();
+        
+        var issues = await ValidationService.ValidateDocumentAsync(document);
 
+        if (issues.Any())
+        {
+            document.Status = "Needs Review";
+            DbContext.ValidationIssues.AddRange(issues);
+        }
+        else
+        {
+            document.Status = "Validated";
+        }
+
+        await DbContext.SaveChangesAsync();
         message = $"File '{file.Name}' processed and saved!";
     }
 }
