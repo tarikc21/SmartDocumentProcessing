@@ -36,6 +36,16 @@ namespace SmartDocumentProcessing.Services
             var numberMatch = Regex.Match(normalizedText, @"Number:\s*([A-Z0-9\-]+)", RegexOptions.IgnoreCase);
             if (numberMatch.Success)
                 document.DocumentNumber = numberMatch.Groups[1].Value.Trim();
+            
+            if (string.IsNullOrWhiteSpace(document.DocumentNumber))
+            {
+                var firstLineMatch = Regex.Match(normalizedText, @"Invoice\s+([A-Z0-9\-]+)", RegexOptions.IgnoreCase);
+
+                if (firstLineMatch.Success)
+                {
+                    document.DocumentNumber = firstLineMatch.Groups[1].Value.Trim();
+                }
+            }
 
             var dateMatch = Regex.Match(normalizedText, @"Date:\s*([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
             if (dateMatch.Success && DateTime.TryParse(dateMatch.Groups[1].Value, out var parsedDate))
