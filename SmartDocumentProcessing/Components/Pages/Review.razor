@@ -134,7 +134,14 @@ else
         if (document == null)
             return;
 
+        var oldIssues = await DbContext.ValidationIssues
+            .Where(i => i.DocumentId == document.Id)
+            .ToListAsync();
+
+        DbContext.ValidationIssues.RemoveRange(oldIssues);
+
         document.Status = "Rejected";
+
         await DbContext.SaveChangesAsync();
 
         Navigation.NavigateTo("/dashboard");

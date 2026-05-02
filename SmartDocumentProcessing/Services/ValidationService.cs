@@ -46,6 +46,7 @@ namespace SmartDocumentProcessing.Services
             var duplicateExists = await _context.Documents
                 .AnyAsync(d => d.Id != document.Id &&
                                d.DocumentNumber == document.DocumentNumber &&
+                               d.Status!="Rejected" &&
                                !string.IsNullOrWhiteSpace(document.DocumentNumber));
 
             if (duplicateExists)
