@@ -17,8 +17,8 @@ namespace SmartDocumentProcessing.Services
                 .Replace("Number:", "\nNumber:", StringComparison.OrdinalIgnoreCase)
                 .Replace("Date:", "\nDate:", StringComparison.OrdinalIgnoreCase)
                 .Replace("Subtotal", "\nSubtotal", StringComparison.OrdinalIgnoreCase)
-                .Replace("Tax", "\nTax", StringComparison.OrdinalIgnoreCase)
-                .Replace("Total", "\nTotal", StringComparison.OrdinalIgnoreCase);
+                .Replace("Tax", "\nTax", StringComparison.OrdinalIgnoreCase);
+                
 
             var lines = normalizedText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
