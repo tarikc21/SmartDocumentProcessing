@@ -43,10 +43,42 @@ namespace SmartDocumentProcessing.Services
                 issues.Add(CreateIssue(document.Id, "DueDate", "Due date cannot be before issue date."));
             }
 
+            var lineItems = await _context.LineItems
+                .Where(li => li.DocumentId == document.Id)
+                .ToListAsync();
+
+            if (lineItems.Any())
+            {
+                foreach (var item in lineItems)
+                {
+                    var calculatedLineTotal = item.Quantity * item.UnitPrice;
+
+                    if (calculatedLineTotal != item.Total)
+                    {
+                        issues.Add(CreateIssue(
+                            document.Id,
+                            "LineItem",
+                            $"Line item '{item.Description}' total is incorrect. Expected {calculatedLineTotal}, got {item.Total}."
+                        ));
+                    }
+                }
+
+                var calculatedDocumentTotal = lineItems.Sum(li => li.Total);
+
+                if (calculatedDocumentTotal != document.Total)
+                {
+                    issues.Add(CreateIssue(
+                        document.Id,
+                        "Total",
+                        $"Document total does not match sum of line items. Expected {calculatedDocumentTotal}, got {document.Total}."
+                    ));
+                }
+            }
+
             var duplicateExists = await _context.Documents
                 .AnyAsync(d => d.Id != document.Id &&
                                d.DocumentNumber == document.DocumentNumber &&
-                               d.Status!="Rejected" &&
+                               d.Status != "Rejected" &&
                                !string.IsNullOrWhiteSpace(document.DocumentNumber));
 
             if (duplicateExists)
