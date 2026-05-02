@@ -1,39 +1,18 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">SmartDocumentProcessing</a>
-    </div>
+﻿<div style="margin-bottom:32px;">
+    <div style="font-size:20px; font-weight:700; color:white;">Smart Docs</div>
+    <div style="font-size:13px; color:#94a3b8;">Processing System</div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<nav style="display:flex; flex-direction:column; gap:10px;">
+    <NavLink href="/" style="color:#cbd5e1; text-decoration:none; padding:12px 14px; border-radius:12px; background:#1e293b;">
+        Home
+    </NavLink>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    <NavLink href="/upload" style="color:#cbd5e1; text-decoration:none; padding:12px 14px; border-radius:12px; background:#1e293b;">
+        Upload Document
+    </NavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="upload">
-                Upload
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="dashboard">
-                Dashboard
-            </NavLink>
-        </li>
-    </nav>
-</div>
+    <NavLink href="/dashboard" style="color:#cbd5e1; text-decoration:none; padding:12px 14px; border-radius:12px; background:#1e293b;">
+        Dashboard
+    </NavLink>
+</nav>

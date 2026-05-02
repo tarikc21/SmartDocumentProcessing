@@ -49,3 +49,158 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+body {
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+main {
+    background: #0f172a;
+}
+
+.content {
+    padding: 32px;
+}
+
+.card {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 16px;
+    color: #e5e7eb;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.table {
+    color: #e5e7eb;
+}
+
+    .table thead th {
+        color: #93c5fd;
+        border-bottom: 1px solid #334155;
+    }
+
+    .table td {
+        border-color: #1f2937;
+    }
+
+.form-control,
+.form-select {
+    background-color: #0b1220;
+    color: #e5e7eb;
+    border: 1px solid #334155;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #0b1220;
+        color: #fff;
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 0.2rem rgba(96,165,250,0.15);
+    }
+
+.btn-primary {
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+.btn-outline-secondary {
+    color: #cbd5e1;
+    border-color: #475569;
+}
+
+    .btn-outline-secondary:hover {
+        background: #334155;
+        color: white;
+    }
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.page-subtitle {
+    color: #94a3b8;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #111827, #1e293b);
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 20px;
+}
+html, body {
+    background: #0f172a !important;
+    color: #e5e7eb !important;
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    background: #0f172a;
+}
+
+.sidebar {
+    width: 260px;
+    background: #020617;
+    border-right: 1px solid #1e293b;
+    padding: 24px 16px;
+}
+
+.brand {
+    margin-bottom: 32px;
+    padding: 0 8px;
+}
+
+.brand-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.brand-subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-link {
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+    .menu-link:hover {
+        background: #1e293b;
+        color: #ffffff;
+    }
+
+    .menu-link.active {
+        background: #2563eb;
+        color: #ffffff;
+    }
+
+.main-content {
+    flex: 1;
+    padding: 40px;
+    background: #0f172a;
+}
+
+.card {
+    background: #111827 !important;
+    border: 1px solid #1f2937 !important;
+    color: #e5e7eb !important;
+}

@@ -5,7 +5,8 @@
 @using SmartDocumentProcessing.Models
 @inject AppDbContext DbContext
 
-<h3>Documents Dashboard</h3>
+<h1 class="page-title">Documents Dashboard</h1>
+<p class="page-subtitle">Review processed documents, statuses and validation issues.</p>
 
 @if (documents == null)
 {
@@ -17,17 +18,24 @@ else if (!documents.Any())
 }
 else
 {
-    <table class="table table-striped table-hover mt-3">
-        <thead>
+    <table style="
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+            background:#111827;
+            border-radius:12px;
+            overflow:hidden;
+        ">
+        <thead style="background:#020617;">
             <tr>
-                <th>Type</th>
-                <th>Supplier</th>
-                <th>Number</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Issues</th>
-                <th>Uploaded</th>
-                <th>Action</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Type</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Supplier</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Number</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Total</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Status</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Issues</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Uploaded</th>
+                <th style="padding:14px; text-align:left; color:#93c5fd;">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -35,25 +43,38 @@ else
             {
                 var docIssues = issues.Where(i => i.DocumentId == doc.Id).ToList();
 
-                <tr>
-                    <td>@doc.DocumentType</td>
-                    <td>@doc.SupplierName</td>
-                    <td>@doc.DocumentNumber</td>
-                    <td>@doc.Total @doc.Currency</td>
-                    <td>
-                        <span class="@GetStatusClass(doc.Status)">
+                <tr style="transition:0.2s;"
+                    onmouseover="this.style.background='#1e293b'"
+                    onmouseout="this.style.background='transparent'">
+
+                    <td style="padding:14px; border-top:1px solid #1f2937;">@doc.DocumentType</td>
+                    <td style="padding:14px; border-top:1px solid #1f2937;">@doc.SupplierName</td>
+                    <td style="padding:14px; border-top:1px solid #1f2937;">@doc.DocumentNumber</td>
+                    <td style="padding:14px; border-top:1px solid #1f2937;">@doc.Total @doc.Currency</td>
+
+                    <td style="padding:14px; border-top:1px solid #1f2937;">
+                        <span style="@GetStatusStyle(doc.Status)">
                             @doc.Status
                         </span>
                     </td>
-                    <td>
+
+                    <td style="padding:14px; border-top:1px solid #1f2937;">
                         @if (docIssues.Any())
                         {
-                            <span class="badge bg-danger">@docIssues.Count issue(s)</span>
+                            <span style="
+                                            background:#dc2626;
+                                            color:white;
+                                            padding:4px 8px;
+                                            border-radius:6px;
+                                            font-size:12px;
+                                        ">
+                                @docIssues.Count issue(s)
+                            </span>
 
-                            <ul class="mt-2 mb-0">
+                            <ul style="margin-top:8px; padding-left:16px;">
                                 @foreach (var issue in docIssues)
                                 {
-                                    <li>
+                                    <li style="color:#fca5a5;">
                                         <strong>@issue.Field:</strong> @issue.Message
                                     </li>
                                 }
@@ -61,12 +82,34 @@ else
                         }
                         else
                         {
-                            <span class="badge bg-success">No issues</span>
+                            <span style="
+                                            background:#16a34a;
+                                            color:white;
+                                            padding:4px 8px;
+                                            border-radius:6px;
+                                            font-size:12px;
+                                        ">
+                                No issues
+                            </span>
                         }
                     </td>
-                    <td>@doc.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>
-                        <a class="btn btn-sm btn-primary" href="/review/@doc.Id">Review</a>
+
+                    <td style="padding:14px; border-top:1px solid #1f2937;">
+                        @doc.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </td>
+
+                    <td style="padding:14px; border-top:1px solid #1f2937;">
+                        <a href="/review/@doc.Id"
+                           style="
+                                       padding:6px 12px;
+                                       background:#2563eb;
+                                       color:white;
+                                       border-radius:6px;
+                                       text-decoration:none;
+                                       font-size:13px;
+                                   ">
+                            Review
+                        </a>
                     </td>
                 </tr>
             }
@@ -88,15 +131,15 @@ else
             .ToListAsync();
     }
 
-    private string GetStatusClass(string status)
+    private string GetStatusStyle(string status)
     {
         return status switch
         {
-            "Uploaded" => "badge bg-secondary",
-            "Needs Review" => "badge bg-warning text-dark",
-            "Validated" => "badge bg-success",
-            "Rejected" => "badge bg-danger",
-            _ => "badge bg-light text-dark"
+            "Uploaded" => "background:#475569; color:white; padding:4px 8px; border-radius:6px; font-size:12px;",
+            "Needs Review" => "background:#f59e0b; color:black; padding:4px 8px; border-radius:6px; font-size:12px;",
+            "Validated" => "background:#16a34a; color:white; padding:4px 8px; border-radius:6px; font-size:12px;",
+            "Rejected" => "background:#dc2626; color:white; padding:4px 8px; border-radius:6px; font-size:12px;",
+            _ => "background:#334155; color:white; padding:4px 8px; border-radius:6px; font-size:12px;"
         };
     }
 }

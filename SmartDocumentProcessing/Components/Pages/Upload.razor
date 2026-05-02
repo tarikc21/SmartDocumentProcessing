@@ -7,17 +7,41 @@
 @inject DocumentExtractionService ExtractionService
 @inject ValidationService ValidationService
 
-<h3>Upload Document</h3>
+<h1 class="page-title">Upload Document</h1>
+<p class="page-subtitle">Upload TXT or CSV documents for extraction and validation.</p>
 
-<div class="card p-4">
-    <InputFile OnChange="HandleFileUpload" />
+<div style="background:#111827; border:1px solid #1f2937; border-radius:16px; padding:24px;">
+    <div style="position:relative; display:inline-block;">
+        <button style="
+        padding:10px 16px;
+        background:#2563eb;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+    ">
+            Select File
+        </button>
+
+        <InputFile OnChange="HandleFileUpload"
+                   style="position:absolute; left:0; top:0; opacity:0; width:100%; height:100%; cursor:pointer;" />
+    </div>
 
     @if (!string.IsNullOrEmpty(message))
     {
-        <div class="alert alert-success mt-3">
+        <div style="
+            margin-top:16px;
+            background:#064e3b;
+            color:#d1fae5;
+            border:1px solid #10b981;
+            border-radius:10px;
+            padding:14px 16px;
+        ">
             @message
         </div>
     }
+
+    
 </div>
 
 @code {
