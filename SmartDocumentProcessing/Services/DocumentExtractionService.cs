@@ -10,86 +10,64 @@ namespace SmartDocumentProcessing.Services
         public Document ExtractFromText(string text)
         {
             var document = new Document();
-            var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-            if (lines.Length > 0)
-            {
-                var firstLine = lines[0].Trim();
+            var normalizedText = text
+                .Replace("\r", "\n")
+                .Replace("Supplier:", "\nSupplier:", StringComparison.OrdinalIgnoreCase)
+                .Replace("Number:", "\nNumber:", StringComparison.OrdinalIgnoreCase)
+                .Replace("Date:", "\nDate:", StringComparison.OrdinalIgnoreCase)
+                .Replace("Subtotal", "\nSubtotal", StringComparison.OrdinalIgnoreCase)
+                .Replace("Tax", "\nTax", StringComparison.OrdinalIgnoreCase)
+                .Replace("Total", "\nTotal", StringComparison.OrdinalIgnoreCase);
 
-                if (firstLine.Contains("invoice", StringComparison.OrdinalIgnoreCase))
-                {
-                    document.DocumentType = "Invoice";
+            var lines = normalizedText.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
-                    var parts = firstLine.Split(' ');
-                    if (parts.Length > 1)
-                        document.DocumentNumber = parts[1];
-                }
-                else if (firstLine.Contains("purchase order", StringComparison.OrdinalIgnoreCase))
-                {
-                    document.DocumentType = "Purchase Order";
-                }
-            }
+            if (normalizedText.Contains("purchase order", StringComparison.OrdinalIgnoreCase))
+                document.DocumentType = "Purchase Order";
+            else if (normalizedText.Contains("invoice", StringComparison.OrdinalIgnoreCase))
+                document.DocumentType = "Invoice";
+            else
+                document.DocumentType = "Unknown";
 
-            // Supplier
-            var supplierLine = lines.FirstOrDefault(l =>
-                l.Trim().StartsWith("supplier", StringComparison.OrdinalIgnoreCase));
+            var supplierMatch = Regex.Match(normalizedText, @"Supplier:\s*(.+)", RegexOptions.IgnoreCase);
+            if (supplierMatch.Success)
+                document.SupplierName = supplierMatch.Groups[1].Value.Trim();
 
-            if (supplierLine != null)
-            {
-                document.SupplierName = supplierLine
-                    .Replace("Supplier:", "", StringComparison.OrdinalIgnoreCase)
-                    .Replace("Supplier", "", StringComparison.OrdinalIgnoreCase)
-                    .Trim();
-            }
-
-            // 🔥 PDF / TXT Number (Number: INV-1000)
-            var numberMatch = Regex.Match(text, @"Number:\s*([A-Z0-9\-]+)", RegexOptions.IgnoreCase);
+            var numberMatch = Regex.Match(normalizedText, @"Number:\s*([A-Z0-9\-]+)", RegexOptions.IgnoreCase);
             if (numberMatch.Success)
-            {
                 document.DocumentNumber = numberMatch.Groups[1].Value.Trim();
-            }
 
-            // 🔥 PDF / TXT Date (Date: 2026-04-28)
-            var dateMatch = Regex.Match(text, @"Date:\s*([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
+            var dateMatch = Regex.Match(normalizedText, @"Date:\s*([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
             if (dateMatch.Success && DateTime.TryParse(dateMatch.Groups[1].Value, out var parsedDate))
-            {
                 document.IssueDate = parsedDate;
-            }
 
-            // Total + Currency
-            var totalMatch = Regex.Match(text, @"Total:\s*(\d+([.,]\d+)?)\s*([A-Z]{3})", RegexOptions.IgnoreCase);
-
-            if (totalMatch.Success)
-            {
-                document.Total = ParseDecimal(totalMatch.Groups[1].Value);
-                document.Currency = totalMatch.Groups[3].Value.ToUpper();
-            }
-
-            // Subtotal
-            var subtotalMatch = Regex.Match(text, @"Subtotal:\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
-            if (subtotalMatch.Success)
-                document.Subtotal = ParseDecimal(subtotalMatch.Groups[1].Value);
-
-            // Tax
-            var taxMatch = Regex.Match(text, @"Tax:\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
-            if (taxMatch.Success)
-                document.Tax = ParseDecimal(taxMatch.Groups[1].Value);
-
-            // Ako nema subtotala, izračunaj
-            if (document.Subtotal == 0 && document.Total > 0)
-            {
-                document.Subtotal = document.Total - document.Tax;
-            }
-
-            // Issue Date (TXT varijanta)
-            var issueMatch = Regex.Match(text, @"Issue Date[:\s]+([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
+            var issueMatch = Regex.Match(normalizedText, @"Issue Date[:\s]+([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
             if (issueMatch.Success && DateTime.TryParse(issueMatch.Groups[1].Value, out var issueDate))
                 document.IssueDate = issueDate;
 
-            // Due Date
-            var dueMatch = Regex.Match(text, @"Due Date[:\s]+([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
+            var dueMatch = Regex.Match(normalizedText, @"Due Date[:\s]+([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
             if (dueMatch.Success && DateTime.TryParse(dueMatch.Groups[1].Value, out var dueDate))
                 document.DueDate = dueDate;
+
+            var subtotalMatch = Regex.Match(normalizedText, @"Subtotal\s*:?\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
+            if (subtotalMatch.Success)
+                document.Subtotal = ParseDecimal(subtotalMatch.Groups[1].Value);
+
+            var taxMatch = Regex.Match(normalizedText, @"Tax\s*(\(\d+%\))?\s*:?\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
+            if (taxMatch.Success)
+                document.Tax = ParseDecimal(taxMatch.Groups[2].Value);
+
+            var totalMatches = Regex.Matches(normalizedText, @"Total\s*:?\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
+            if (totalMatches.Count > 0)
+            {
+                var lastTotal = totalMatches[totalMatches.Count - 1];
+                document.Total = ParseDecimal(lastTotal.Groups[1].Value);
+            }
+
+            document.Currency = "EUR";
+
+            if (document.Subtotal == 0 && document.Total > 0)
+                document.Subtotal = document.Total - document.Tax;
 
             document.Status = "Needs Review";
             return document;
