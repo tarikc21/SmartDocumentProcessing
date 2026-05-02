@@ -16,6 +16,7 @@ The system focuses on extracting structured data from imperfect inputs, validati
 
   * TXT (semi-structured documents)
   * CSV (structured documents with line items)
+  * PDF (text-based documents)
 
 ### Data Extraction
 
@@ -27,6 +28,9 @@ The system focuses on extracting structured data from imperfect inputs, validati
   * Currency
   * Total amount
   * Line items (CSV)
+  * Issue date
+  * Due date
+  * Subtotal and tax
 
 ### Validation Engine
 
@@ -36,6 +40,8 @@ The system focuses on extracting structured data from imperfect inputs, validati
   * Duplicate document numbers
   * Invalid totals
   * Data inconsistencies
+  * Line item total validation
+  * Subtotal and total consistency check
 
 ### Review Interface
 
@@ -129,3 +135,5 @@ All implemented logic, validation rules, and functionality are fully understood 
 ## Notes
 
 The system is designed to work with incomplete and semi-structured data, prioritizing validation and user correction over perfect extraction.
+
+PDF extraction works for text-based PDFs. OCR (image-based PDFs) is not supported.
