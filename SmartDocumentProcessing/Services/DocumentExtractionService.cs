@@ -1,6 +1,7 @@
 ﻿using SmartDocumentProcessing.Models;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using UglyToad.PdfPig;
 
 namespace SmartDocumentProcessing.Services
 {
@@ -29,6 +30,7 @@ namespace SmartDocumentProcessing.Services
                 }
             }
 
+            // Supplier
             var supplierLine = lines.FirstOrDefault(l =>
                 l.Trim().StartsWith("supplier", StringComparison.OrdinalIgnoreCase));
 
@@ -40,6 +42,21 @@ namespace SmartDocumentProcessing.Services
                     .Trim();
             }
 
+            // 🔥 PDF / TXT Number (Number: INV-1000)
+            var numberMatch = Regex.Match(text, @"Number:\s*([A-Z0-9\-]+)", RegexOptions.IgnoreCase);
+            if (numberMatch.Success)
+            {
+                document.DocumentNumber = numberMatch.Groups[1].Value.Trim();
+            }
+
+            // 🔥 PDF / TXT Date (Date: 2026-04-28)
+            var dateMatch = Regex.Match(text, @"Date:\s*([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
+            if (dateMatch.Success && DateTime.TryParse(dateMatch.Groups[1].Value, out var parsedDate))
+            {
+                document.IssueDate = parsedDate;
+            }
+
+            // Total + Currency
             var totalMatch = Regex.Match(text, @"Total:\s*(\d+([.,]\d+)?)\s*([A-Z]{3})", RegexOptions.IgnoreCase);
 
             if (totalMatch.Success)
@@ -48,23 +65,28 @@ namespace SmartDocumentProcessing.Services
                 document.Currency = totalMatch.Groups[3].Value.ToUpper();
             }
 
+            // Subtotal
             var subtotalMatch = Regex.Match(text, @"Subtotal:\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
             if (subtotalMatch.Success)
                 document.Subtotal = ParseDecimal(subtotalMatch.Groups[1].Value);
 
+            // Tax
             var taxMatch = Regex.Match(text, @"Tax:\s*(\d+([.,]\d+)?)", RegexOptions.IgnoreCase);
             if (taxMatch.Success)
                 document.Tax = ParseDecimal(taxMatch.Groups[1].Value);
 
+            // Ako nema subtotala, izračunaj
             if (document.Subtotal == 0 && document.Total > 0)
             {
                 document.Subtotal = document.Total - document.Tax;
             }
 
+            // Issue Date (TXT varijanta)
             var issueMatch = Regex.Match(text, @"Issue Date[:\s]+([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
             if (issueMatch.Success && DateTime.TryParse(issueMatch.Groups[1].Value, out var issueDate))
                 document.IssueDate = issueDate;
 
+            // Due Date
             var dueMatch = Regex.Match(text, @"Due Date[:\s]+([0-9\-\.\/]+)", RegexOptions.IgnoreCase);
             if (dueMatch.Success && DateTime.TryParse(dueMatch.Groups[1].Value, out var dueDate))
                 document.DueDate = dueDate;
@@ -140,7 +162,20 @@ namespace SmartDocumentProcessing.Services
 
             return document;
         }
+        public Document ExtractFromPdf(string filePath)
+        {
+            var text = "";
 
+            using (var pdf = PdfDocument.Open(filePath))
+            {
+                foreach (var page in pdf.GetPages())
+                {
+                    text += page.Text + Environment.NewLine;
+                }
+            }
+
+            return ExtractFromText(text);
+        }
         private decimal ParseDecimal(string value)
         {
             value = value.Replace(",", ".");
