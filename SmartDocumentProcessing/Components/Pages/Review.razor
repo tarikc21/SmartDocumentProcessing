@@ -130,20 +130,20 @@ else
     }
 
     private async Task RejectDocument()
-    {
-        if (document == null)
-            return;
+{
+    if (document == null)
+        return;
 
-        var oldIssues = await DbContext.ValidationIssues
-            .Where(i => i.DocumentId == document.Id)
-            .ToListAsync();
+    var oldIssues = await DbContext.ValidationIssues
+        .Where(i => i.DocumentId == document.Id)
+        .ToListAsync();
 
-        DbContext.ValidationIssues.RemoveRange(oldIssues);
+    DbContext.ValidationIssues.RemoveRange(oldIssues);
 
-        document.Status = "Rejected";
+    document.Status = "Rejected";
 
-        await DbContext.SaveChangesAsync();
+    await DbContext.SaveChangesAsync();
 
-        Navigation.NavigateTo("/dashboard");
-    }
+    Navigation.NavigateTo("/dashboard");
+}
 }

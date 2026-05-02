@@ -42,16 +42,31 @@
         }
 
         // 2. Pročitaj sadržaj ako je TXT
-        string textContent = "";
+        string fileContent = "";
+        var extension = Path.GetExtension(file.Name).ToLower();
 
-        if (Path.GetExtension(file.Name).ToLower() == ".txt")
+        using (var reader = new StreamReader(file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024)))
         {
-            using var reader = new StreamReader(file.OpenReadStream());
-            textContent = await reader.ReadToEndAsync();
+            fileContent = await reader.ReadToEndAsync();
         }
 
-        // 3. Ekstrakcija podataka
-        var document = ExtractionService.ExtractFromText(textContent);
+        Document document;
+
+        if (extension == ".txt")
+        {
+            document = ExtractionService.ExtractFromText(fileContent);
+        }
+        else if (extension == ".csv")
+        {
+            document = ExtractionService.ExtractFromCsv(fileContent);
+        }
+        else
+        {
+            document = new Document
+            {
+                Status = "Needs Review"
+            };
+        }
 
         // 4. Dodatni podaci
         document.OriginalFileName = file.Name;

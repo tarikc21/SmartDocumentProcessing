@@ -22,5 +22,6 @@
         public string OriginalFileName { get; set; } = "";
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public List<LineItem> LineItems { get; set; } = new();
     }
 }

@@ -12,5 +12,6 @@ namespace SmartDocumentProcessing.Data
 
         public DbSet<Document> Documents { get; set; }
         public DbSet<ValidationIssue> ValidationIssues { get; set; }
+        public DbSet<LineItem> LineItems { get; set; }
     }
 }

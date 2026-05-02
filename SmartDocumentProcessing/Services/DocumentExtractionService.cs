@@ -54,5 +54,54 @@ namespace SmartDocumentProcessing.Services
 
             return document;
         }
+        public Document ExtractFromCsv(string csvContent)
+        {
+            var document = new Document();
+
+            var lines = csvContent.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+            if (lines.Length < 2)
+            {
+                document.Status = "Needs Review";
+                return document;
+            }
+
+            decimal totalSum = 0;
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                var parts = lines[i].Split(',').Select(p => p.Trim()).ToArray();
+
+                if (parts.Length < 4)
+                    continue;
+
+                var lineItem = new LineItem
+                {
+                    Description = parts[0]
+                };
+
+                if (decimal.TryParse(parts[1], out var quantity))
+                    lineItem.Quantity = quantity;
+
+                if (decimal.TryParse(parts[2], out var unitPrice))
+                    lineItem.UnitPrice = unitPrice;
+
+                if (decimal.TryParse(parts[3], out var lineTotal))
+                    lineItem.Total = lineTotal;
+
+                document.LineItems.Add(lineItem);
+                totalSum += lineItem.Total;
+            }
+
+            document.DocumentType = "Invoice";
+            document.DocumentNumber = $"CSV-{Guid.NewGuid().ToString()[..6]}";
+            document.Currency = "EUR";
+            document.Total = totalSum;
+            document.Subtotal = totalSum;
+            document.Tax = 0;
+            document.Status = "Needs Review";
+
+            return document;
+        }
     }
 }
